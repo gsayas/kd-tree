@@ -47,7 +47,34 @@ public class PointSET {
     return p.x() >= rect.xmin() && p.x() <= rect.xmax() && p.y() >= rect.ymin() && p.y() <= rect.ymax();
   }
 
-  public Point2D nearest(Point2D p) { return null; }            // a nearest neighbor in the set to point p; null if the set is empty
+  public Point2D nearest(Point2D origin) {
+    Point2D closest = null;
+    double nearest = -1;
+    double candidateDistance;
+
+    for (Point2D p : set) {
+      if (p.equals(origin)) continue;
+
+      candidateDistance = getDistance(p, origin);
+      if( isCloser(nearest, candidateDistance) ){
+        closest = p;
+        nearest = candidateDistance;
+      }
+    }
+
+    return closest;
+  } // a nearest neighbor in the set to point p; null if the set is empty
+
+  private double getDistance(Point2D p, Point2D origin) {
+    double diffX = Math.abs(Math.abs(origin.x()) - Math.abs(p.x()));
+    double diffY = Math.abs(Math.abs(origin.y()) - Math.abs(p.y()));
+
+    return diffX + diffY;
+  }
+
+  private boolean isCloser(double current, double candidate) {
+    return current == -1 || candidate < current;
+  }
 
   public static void main(String[] args) {}                 // unit testing of the methods (optional)
 }

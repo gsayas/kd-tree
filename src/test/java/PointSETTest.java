@@ -70,6 +70,25 @@ public class PointSETTest {
 
     RectHV rect = new RectHV(1, 1, 1, 2);
     assertEquals(1, StreamSupport.stream(set.range(rect).spliterator(), false).count());
+  }
+
+  @Test
+  public void testNearest() {
+
+    PointSET set = new PointSET();
+    Point2D p1 = new Point2D(1, 2);
+    Point2D p2 = new Point2D(1, 3);
+    Point2D p3 = new Point2D(1, 4);
+    Point2D p4 = new Point2D(1, 1.9);
+
+    set.insert(p1);
+    set.insert(p2);
+    set.insert(p3);
+    set.insert(p4);
+
+
+    System.out.println(set.nearest(p1));
+    assertTrue(p4.equals(set.nearest(p1)));
 
   }
 }
