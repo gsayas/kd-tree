@@ -42,7 +42,7 @@ public class NearestNeighborVisualizer {
       Point2D query = new Point2D(x, y);
 
       // draw all of the points
-      StdDraw.clear();
+      StdDraw.clear();  
       StdDraw.setPenColor(StdDraw.BLACK);
       StdDraw.setPenRadius(0.01);
       brute.draw();
