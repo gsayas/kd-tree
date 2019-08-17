@@ -5,7 +5,7 @@ import edu.princeton.cs.algs4.StdDraw;
 
 public class KdTree {
 
-  private boolean enableDebug = false;
+  private boolean enableDebug = true;
 
   private enum Axis {
     Y, X
@@ -50,13 +50,13 @@ public class KdTree {
       return new Node(p, axis, side);
     }
 
-    int cmp = compareByAxis(x, p, switchAxis(axis));
-    if(cmp < 0){
+    int compare = compareByAxis(x, p, switchAxis(axis));
+    if(compare < 0){
       if(x.right == null) {
         debug(String.format("Inserting to the %s on axis %s ", Side.RIGHT, switchAxis(axis)));
       }
       x.right = insert(x.right, p, switchAxis(axis), Side.RIGHT);
-    }else if(cmp > 0) {
+    }else if(compare > 0) {
       if(x.left == null){
         debug(String.format("Inserting to the %s on axis %s ", Side.LEFT, switchAxis(axis)));
       }
@@ -68,7 +68,7 @@ public class KdTree {
   }
 
   private void debug(String msg) {
-    if(enableDebug) debug(msg);
+    if(enableDebug) System.out.println(msg);
   }
 
   private int compareByAxis(Node x, Point2D p, Axis axis) {
@@ -86,7 +86,27 @@ public class KdTree {
     return axis == Axis.X ? Axis.Y : Axis.X;
   }
 
-  public boolean contains(Point2D p) { return false; }
+  public boolean contains(Point2D p) {
+    if(isEmpty()){
+      return false;
+    }
+    return contains(root, p, Axis.X);
+  }
+
+  public boolean contains(Node x, Point2D p, Axis axis) {
+    if(x == null) {
+      return false;
+    }
+
+    int compare = compareByAxis(x, p, switchAxis(axis));
+    if(compare < 0){
+      return contains(x.right, p, switchAxis(axis));
+    }else if(compare > 0) {
+      return contains(x.left, p, switchAxis(axis));
+    }else {
+      return true;
+    }
+  }
 
   public void draw() {
     draw(root, Axis.X, null);
@@ -116,8 +136,8 @@ public class KdTree {
 
   private void drawVerticalLine(Node node, Axis axis, Node parent) {
     debug("Drawing Vertical Line:");
-    double limit = parent != null ? parent.point.y() : 1.0;
-    double origin = parent != null ? parent.point.y() : 0.0;
+    double limit = 1;
+    double origin = 0;
 
     if(node.side == Side.LEFT) {
       StdDraw.line(node.point.x(), origin, node.point.x(), limit);
@@ -133,8 +153,8 @@ public class KdTree {
 
   private void drawHorizontalLine(Node node, Axis axis, Node parent) {
     debug("Drawing Horizontal Line:");
-    double limit = parent != null ? parent.point.x() : 1.0;
-    double origin = parent != null ? parent.point.y() : 0.0;
+    double limit = 1;
+    double origin = 0;
 
     if(node.side == Side.LEFT) {
       StdDraw.line(origin, node.point.y(), limit, node.point.y());
@@ -148,7 +168,10 @@ public class KdTree {
     }
   }
 
-  public Iterable<Point2D> range(RectHV rect)  { return null; }
+  public Iterable<Point2D> range(RectHV rect)  {
+    return null;
+  }
+
   public Point2D nearest(Point2D p) { return null; }
 
 }
