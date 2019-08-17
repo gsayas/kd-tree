@@ -5,6 +5,8 @@ import edu.princeton.cs.algs4.StdDraw;
 
 public class KdTree {
 
+  private boolean enableDebug = false;
+
   private enum Axis {
     Y, X
   }
@@ -50,13 +52,13 @@ public class KdTree {
 
     int cmp = compareByAxis(x, p, switchAxis(axis));
     if(cmp < 0){
-      if(x.right == null){
-        debug(x, p, Side.RIGHT, switchAxis(axis));
+      if(x.right == null) {
+        debug(String.format("Inserting to the %s on axis %s ", Side.RIGHT, switchAxis(axis)));
       }
       x.right = insert(x.right, p, switchAxis(axis), Side.RIGHT);
-    }else if(cmp > 0){cprev
+    }else if(cmp > 0) {
       if(x.left == null){
-        debug(x, p, Side.LEFT, switchAxis(axis));
+        debug(String.format("Inserting to the %s on axis %s ", Side.LEFT, switchAxis(axis)));
       }
       x.left = insert(x.left, p, switchAxis(axis), Side.LEFT);
     }else {
@@ -65,8 +67,8 @@ public class KdTree {
     return x;
   }
 
-  private void debug(Node x, Point2D p, Side side, Axis axis) {
-      System.out.println(String.format("Inserting to the %s on axis %s ", side.toString(), axis.toString()));
+  private void debug(String msg) {
+    if(enableDebug) debug(msg);
   }
 
   private int compareByAxis(Node x, Point2D p, Axis axis) {
@@ -113,28 +115,36 @@ public class KdTree {
   }
 
   private void drawVerticalLine(Node node, Axis axis, Node parent) {
-    double limit = parent != null ? parent.point.y() : 1;
-    double origin = parent != null ? parent.point.y() : 0;
+    debug("Drawing Vertical Line:");
+    double limit = parent != null ? parent.point.y() : 1.0;
+    double origin = parent != null ? parent.point.y() : 0.0;
 
     if(node.side == Side.LEFT) {
       StdDraw.line(node.point.x(), origin, node.point.x(), limit);
+      debug(String.format("From: (%f, %f) to: (%f, %f)", node.point.x(), origin, node.point.x(), limit));
     } else if(node.side == Side.RIGHT) {
       StdDraw.line(node.point.x(), origin, node.point.x(), limit);
+      debug(String.format("From: (%f, %f) to: (%f, %f)", node.point.x(), origin, node.point.x(), limit));
     } else {
       StdDraw.line(node.point.x(), 0, node.point.x(), 1);
+      debug(String.format("From: (%f, %f) to: (%f, %f)", node.point.x(), 0.0, node.point.x(), 1.0));
     }
   }
 
   private void drawHorizontalLine(Node node, Axis axis, Node parent) {
-    double limit = parent != null ? parent.point.x() : 1;
-    double origin = parent != null ? parent.point.y() : 0;
+    debug("Drawing Horizontal Line:");
+    double limit = parent != null ? parent.point.x() : 1.0;
+    double origin = parent != null ? parent.point.y() : 0.0;
 
     if(node.side == Side.LEFT) {
       StdDraw.line(origin, node.point.y(), limit, node.point.y());
+      debug(String.format("From: (%f, %f) to: (%f, %f)", origin, node.point.y(), limit, node.point.y()));
     } else if(node.side == Side.RIGHT) {
       StdDraw.line(origin, node.point.y(), limit, node.point.y());
+      debug(String.format("From: (%f, %f) to: (%f, %f)", origin, node.point.y(), limit, node.point.y()));
     } else {
-      StdDraw.line(0, node.point.y(), 1, node.point.y());
+      StdDraw.line(0.0, node.point.y(), 1.0, node.point.y());
+      debug(String.format("From: (%f, %f) to: (%f, %f)", 0.0, node.point.y(), 1.0, node.point.y()));
     }
   }
 
