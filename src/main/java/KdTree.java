@@ -2,6 +2,8 @@
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
+import java.util.ArrayList;
+import java.util.List;
 
 public class KdTree {
 
@@ -169,7 +171,45 @@ public class KdTree {
   }
 
   public Iterable<Point2D> range(RectHV rect)  {
-    return null;
+    return range(rect, root, Axis.X);
+  }
+
+  private List<Point2D> range(RectHV rect, Node node, Axis axis) {
+    List<Point2D> range = new ArrayList<>();
+
+    if(rect.contains(node.point)){
+      range.add(node.point);
+    }
+
+    if(shouldCheckLeft(rect, node, switchAxis(axis))){
+      range.addAll(range(rect, node.left, switchAxis(axis)));
+    }
+
+    if(shouldCheckRight(rect, node, switchAxis(axis))){
+      range.addAll(range(rect, node.right, switchAxis(axis)));
+    }
+
+    return range;
+  }
+
+  private boolean shouldCheckLeft(RectHV rect, Node node, Axis axis) {
+    if(axis == Axis.X && node.point.x() < rect.xmax()){
+      return true;
+    } else if(axis == Axis.Y && node.point.y() < rect.ymax()){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private boolean shouldCheckRight(RectHV rect, Node node, Axis axis) {
+    if(axis == Axis.X && node.point.x() > rect.xmin()){
+      return true;
+    } else if(axis == Axis.Y && node.point.y() > rect.ymin()){
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public Point2D nearest(Point2D p) { return null; }

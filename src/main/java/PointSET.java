@@ -35,16 +35,12 @@ public class PointSET {
     List<Point2D> range = new ArrayList<>();
 
     set.stream().forEach(p -> {
-      if(isInsideRect(p, rect)){
+      if(rect.contains(p)){
         range.add(p);
       }
     });
 
     return range;
-  }
-
-  private boolean isInsideRect(Point2D p, RectHV rect) {
-    return p.x() >= rect.xmin() && p.x() <= rect.xmax() && p.y() >= rect.ymin() && p.y() <= rect.ymax();
   }
 
   public Point2D nearest(Point2D origin) {
