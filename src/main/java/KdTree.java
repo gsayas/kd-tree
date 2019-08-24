@@ -3,11 +3,13 @@ import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.StdDraw;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class KdTree {
 
-  private boolean enableDebug = true;
+  private boolean enableDebug = false;
+  private Point2D champion;
 
   private enum Axis {
     Y, X
@@ -181,18 +183,18 @@ public class KdTree {
       range.add(node.point);
     }
 
-    if(shouldCheckLeft(rect, node, switchAxis(axis))){
+    if(rectGoesLeft(rect, node, switchAxis(axis))){
       range.addAll(range(rect, node.left, switchAxis(axis)));
     }
 
-    if(shouldCheckRight(rect, node, switchAxis(axis))){
+    if(rectGoesRight(rect, node, switchAxis(axis))){
       range.addAll(range(rect, node.right, switchAxis(axis)));
     }
 
     return range;
   }
 
-  private boolean shouldCheckLeft(RectHV rect, Node node, Axis axis) {
+  private boolean rectGoesLeft(RectHV rect, Node node, Axis axis) {
     if(axis == Axis.X && node.point.x() < rect.xmax()){
       return true;
     } else if(axis == Axis.Y && node.point.y() < rect.ymax()){
@@ -202,7 +204,7 @@ public class KdTree {
     }
   }
 
-  private boolean shouldCheckRight(RectHV rect, Node node, Axis axis) {
+  private boolean rectGoesRight(RectHV rect, Node node, Axis axis) {
     if(axis == Axis.X && node.point.x() > rect.xmin()){
       return true;
     } else if(axis == Axis.Y && node.point.y() > rect.ymin()){
@@ -212,6 +214,56 @@ public class KdTree {
     }
   }
 
-  public Point2D nearest(Point2D p) { return null; }
+  public Point2D nearest(Point2D p) {
+    champion = null;
+    findAndSetChampion(root, p);
+    return champion;
+  }
+
+  private void findAndSetChampion(Node subtree, Point2D p) {
+    if(isBetterChampion(subtree.point, p)){
+      champion = subtree.point;
+    }
+
+    Side sideTowardsPoint = findSideTowardsPoint(subtree, p);
+    Node subtreeTowardsPoint = getSubtreeTowardsPoint(subtree, sideTowardsPoint);
+
+    if(subtreeTowardsPoint != null) {
+      findAndSetChampion(subtreeTowardsPoint, p);
+    }
+
+    Node subtreeAwayFromPoint = getSubtreeTowardsPoint(subtree, switchSide(sideTowardsPoint));
+    if(subtreeAwayFromPoint != null) {
+      if (couldOtherSideContainChampion(switchSide(sideTowardsPoint), subtreeAwayFromPoint, p)) {
+        findAndSetChampion(subtreeAwayFromPoint, p);
+      }
+    }
+
+  }
+
+  private boolean couldOtherSideContainChampion(Side switchSide, Node subtreeAwayFromPoint,
+      Point2D p) {
+    return true;
+  }
+
+  private Side findSideTowardsPoint(Node subtree, Point2D p) {
+    int cmp = compareByAxis(subtree, p, switchAxis(subtree.axis));
+    return cmp < 1 ? Side.RIGHT : Side.LEFT;
+  }
+
+  private boolean isBetterChampion(Point2D candidate, Point2D query) {
+    if(champion == null) return true;
+    Comparator<Point2D> comparator = query.distanceToOrder();
+    int cmp = comparator.compare(champion, candidate);
+    return cmp < 0;
+  }
+
+  private Node getSubtreeTowardsPoint(Node subtree, Side sideTowardsPoint) {
+    return sideTowardsPoint == Side.LEFT ? subtree.left : subtree.right;
+  }
+
+  private Side switchSide(Side side) {
+    return side == Side.LEFT ? Side.RIGHT : Side.LEFT;
+  }
 
 }

@@ -61,4 +61,22 @@ public class KdTreeTest {
     RectHV rect = new RectHV(1, 1, 1, 2);
     assertEquals(1, StreamSupport.stream(tree.range(rect).spliterator(), false).count());
   }
+
+  @Test
+  public void testNearest() {
+
+    KdTree tree = new KdTree();
+    Point2D p1 = new Point2D(1, 2);
+    Point2D p2 = new Point2D(1, 3);
+    Point2D p3 = new Point2D(1, 4);
+    Point2D p4 = new Point2D(1, 1.9);
+
+    tree.insert(p1);
+    tree.insert(p2);
+    tree.insert(p3);
+    //tree.insert(p4);
+
+    System.out.println(tree.nearest(p4));
+    assertTrue(p1.equals(tree.nearest(p4)));
+  }
 }

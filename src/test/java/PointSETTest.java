@@ -84,9 +84,9 @@ public class PointSETTest {
     set.insert(p1);
     set.insert(p2);
     set.insert(p3);
-    set.insert(p4);
+    //set.insert(p4);
 
-    System.out.println(set.nearest(p1));
-    assertTrue(p4.equals(set.nearest(p1)));
+    System.out.println(set.nearest(p4));
+    assertTrue(p1.equals(set.nearest(p4)));
   }
 }
