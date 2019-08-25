@@ -106,7 +106,7 @@ public class KdTree {
     return contains(root, p, Axis.X);
   }
 
-  public boolean contains(Node x, Point2D p, Axis axis) {
+  private boolean contains(Node x, Point2D p, Axis axis) {
     if(x == null) {
       return false;
     }
