@@ -25,12 +25,16 @@ public class KdTree {
     private Point2D point;
     private Axis axis;
     private Side side;
+    private int id;
 
-    public Node(Point2D point, Axis axis, Side side) {
+    public Node(Point2D point, Axis axis, Side side, int id) {
       this.point = point;
       this.axis = axis;
       this.side = side;
+      this.id = id;
     }
+
+    public int getId() { return this.id; }
   }
 
   private Node root;
@@ -45,29 +49,33 @@ public class KdTree {
   public int size()  { return size; }
 
   public void insert(Point2D p) {
+    if(p == null) throw new java.lang.IllegalArgumentException();
     root = insert(root, p, Axis.X, null);
   }
 
   private Node insert(Node x, Point2D p, Axis axis, Side side) {
     if(x == null) {
       size++;
-      return new Node(p, axis, side);
+      return new Node(p, axis, side, size);
     }
 
     int compare = compareByAxis(x, p, switchAxis(axis));
-    if(compare < 0){
+    if(compare <= 0){
       if(x.right == null) {
-        debug(String.format("Inserting to the %s on axis %s ", Side.RIGHT, switchAxis(axis)));
+        debug(String.format("Inserting point %d to the RIGHT of %d on axis %s ", size + 1, x.getId(), switchAxis(axis)));
       }
-      x.right = insert(x.right, p, switchAxis(axis), Side.RIGHT);
+      if(!p.equals(x.point)) {
+        x.right = insert(x.right, p, switchAxis(axis), Side.RIGHT);
+      }else{
+        x.point = p;
+      }
     }else if(compare > 0) {
       if(x.left == null){
-        debug(String.format("Inserting to the %s on axis %s ", Side.LEFT, switchAxis(axis)));
+        debug(String.format("Inserting point %d to the LEFT of %d on axis %s ", size + 1, x.getId(), switchAxis(axis)));
       }
       x.left = insert(x.left, p, switchAxis(axis), Side.LEFT);
-    }else {
-      x.point = p;
     }
+    debug(String.format("there are %d nodes after this action", size()));
     return x;
   }
 
@@ -79,7 +87,7 @@ public class KdTree {
     int res;
     boolean isXAxis = (axis == Axis.X);
     if(isXAxis) {
-      res = Double.compare(p.x(), x.point.x());
+      res = Double.compare(x.point.x(), p.x());
     }else {
       res = Double.compare(x.point.y(), p.y());
     }
@@ -91,6 +99,7 @@ public class KdTree {
   }
 
   public boolean contains(Point2D p) {
+    if(p == null) throw new java.lang.IllegalArgumentException();
     if(isEmpty()){
       return false;
     }
@@ -139,40 +148,41 @@ public class KdTree {
   }
 
   private void drawVerticalLine(Node node, Axis axis, Node parent) {
-    debug("Drawing Vertical Line:");
+    //debug("Drawing Vertical Line:");
     double limit = 1;
     double origin = 0;
 
     if(node.side == Side.LEFT) {
       StdDraw.line(node.point.x(), origin, node.point.x(), limit);
-      debug(String.format("From: (%f, %f) to: (%f, %f)", node.point.x(), origin, node.point.x(), limit));
+      //debug(String.format("From: (%f, %f) to: (%f, %f)", node.point.x(), origin, node.point.x(), limit));
     } else if(node.side == Side.RIGHT) {
       StdDraw.line(node.point.x(), origin, node.point.x(), limit);
-      debug(String.format("From: (%f, %f) to: (%f, %f)", node.point.x(), origin, node.point.x(), limit));
+      //debug(String.format("From: (%f, %f) to: (%f, %f)", node.point.x(), origin, node.point.x(), limit));
     } else {
       StdDraw.line(node.point.x(), 0, node.point.x(), 1);
-      debug(String.format("From: (%f, %f) to: (%f, %f)", node.point.x(), 0.0, node.point.x(), 1.0));
+      //debug(String.format("From: (%f, %f) to: (%f, %f)", node.point.x(), 0.0, node.point.x(), 1.0));
     }
   }
 
   private void drawHorizontalLine(Node node, Axis axis, Node parent) {
-    debug("Drawing Horizontal Line:");
+    //debug("Drawing Horizontal Line:");
     double limit = 1;
     double origin = 0;
 
     if(node.side == Side.LEFT) {
       StdDraw.line(origin, node.point.y(), limit, node.point.y());
-      debug(String.format("From: (%f, %f) to: (%f, %f)", origin, node.point.y(), limit, node.point.y()));
+      //debug(String.format("From: (%f, %f) to: (%f, %f)", origin, node.point.y(), limit, node.point.y()));
     } else if(node.side == Side.RIGHT) {
       StdDraw.line(origin, node.point.y(), limit, node.point.y());
-      debug(String.format("From: (%f, %f) to: (%f, %f)", origin, node.point.y(), limit, node.point.y()));
+      //debug(String.format("From: (%f, %f) to: (%f, %f)", origin, node.point.y(), limit, node.point.y()));
     } else {
       StdDraw.line(0.0, node.point.y(), 1.0, node.point.y());
-      debug(String.format("From: (%f, %f) to: (%f, %f)", 0.0, node.point.y(), 1.0, node.point.y()));
+      //debug(String.format("From: (%f, %f) to: (%f, %f)", 0.0, node.point.y(), 1.0, node.point.y()));
     }
   }
 
   public Iterable<Point2D> range(RectHV rect)  {
+    if(rect == null) throw new java.lang.IllegalArgumentException();
     return range(rect, root, Axis.X);
   }
 
@@ -215,12 +225,14 @@ public class KdTree {
   }
 
   public Point2D nearest(Point2D p) {
+    if(p == null) throw new java.lang.IllegalArgumentException();
     champion = null;
     findAndSetChampion(root, p);
     return champion;
   }
 
   private void findAndSetChampion(Node subtree, Point2D p) {
+    //System.out.println(String.format("Examining point: %s",  subtree.point.toString()));
     if(isBetterChampion(subtree.point, p)){
       champion = subtree.point;
     }
@@ -238,7 +250,6 @@ public class KdTree {
         findAndSetChampion(subtreeAwayFromPoint, p);
       }
     }
-
   }
 
   private boolean couldOtherSideContainChampion(Side switchSide, Node subtreeAwayFromPoint,
@@ -255,7 +266,7 @@ public class KdTree {
     if(champion == null) return true;
     Comparator<Point2D> comparator = query.distanceToOrder();
     int cmp = comparator.compare(champion, candidate);
-    return cmp < 0;
+    return cmp > 0;
   }
 
   private Node getSubtreeTowardsPoint(Node subtree, Side sideTowardsPoint) {

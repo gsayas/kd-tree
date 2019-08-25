@@ -76,7 +76,7 @@ public class KdTreeTest {
     tree.insert(p3);
     //tree.insert(p4);
 
-    System.out.println(tree.nearest(p4));
+    //System.out.println(tree.nearest(p4));
     assertTrue(p1.equals(tree.nearest(p4)));
   }
 }

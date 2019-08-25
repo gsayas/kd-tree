@@ -20,10 +20,12 @@ public class PointSET {
   public int size() { return set.size(); }
 
   public void insert(Point2D p) {
+    if(p == null) throw new java.lang.IllegalArgumentException();
     set.add(p);
   }
 
   public boolean contains(Point2D p) {
+    if(p == null) throw new java.lang.IllegalArgumentException();
     return set.contains(p);
   }
 
@@ -32,6 +34,7 @@ public class PointSET {
   }
 
   public Iterable<Point2D> range(RectHV rect) {
+    if(rect == null) throw new java.lang.IllegalArgumentException();
     List<Point2D> range = new ArrayList<>();
 
     set.stream().forEach(p -> {
@@ -44,6 +47,7 @@ public class PointSET {
   }
 
   public Point2D nearest(Point2D origin) {
+    if(origin == null) throw new java.lang.IllegalArgumentException();
     Point2D closest = null;
     double nearest = -1;
     double candidateDistance;
