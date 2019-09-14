@@ -4,6 +4,8 @@ import static junit.framework.TestCase.assertTrue;
 
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.StreamSupport;
 import org.junit.Assert;
 import org.junit.Test;
@@ -50,6 +52,19 @@ public class KdTreeTest {
   }
 
   @Test
+  //Sep14 14:30pm
+  public void testContainsDegeneratePoints() {
+
+    KdTree tree = new KdTree();
+    Point2D p1 = new Point2D(0.5, 0.5);
+    Point2D p2 = new Point2D(0.16, 0.5);
+
+    tree.insert(p1);
+    assertTrue(tree.contains(p1));
+    assertFalse(tree.contains(p2));
+  }
+
+  @Test
   public void testRange() {
 
     KdTree tree = new KdTree();
@@ -60,6 +75,31 @@ public class KdTreeTest {
 
     RectHV rect = new RectHV(1, 1, 1, 2);
     assertEquals(1, StreamSupport.stream(tree.range(rect).spliterator(), false).count());
+  }
+
+  @Test
+  //Sep14 18:48pm
+  public void testRange2() {
+
+    KdTree tree = new KdTree();
+
+    List<Point2D> points = new ArrayList<>();
+    points.add( new Point2D(0.372, 0.497));
+    points.add( new Point2D(0.564, 0.413));
+    points.add( new Point2D(0.226, 0.577));
+    points.add( new Point2D(0.144, 0.179));
+    points.add( new Point2D(0.083, 0.51));
+    points.add( new Point2D(0.32, 0.708));
+    points.add( new Point2D(0.417, 0.362));
+    points.add( new Point2D(0.862, 0.825));
+    points.add( new Point2D(0.785, 0.725));
+    points.add( new Point2D(0.499, 0.208));
+
+    points.stream().forEach(point -> tree.insert(point));
+
+    RectHV rect = new RectHV(0.745, 0.538, 0.91, 0.948);
+    assertEquals(2, StreamSupport.stream(tree.range(rect).spliterator(), false).count());
+    StreamSupport.stream(tree.range(rect).spliterator(), false).forEach(point -> System.out.println(point));
   }
 
   @Test
@@ -79,4 +119,12 @@ public class KdTreeTest {
     //System.out.println(tree.nearest(p4));
     assertTrue(p1.equals(tree.nearest(p4)));
   }
+
+  @Test
+  public void testNearestWithEmptyTree() {
+    KdTree tree = new KdTree();
+    assertEquals(null, tree.nearest(new Point2D(1, 1)));
+
+  }
+
 }

@@ -106,18 +106,20 @@ public class KdTree {
     return contains(root, p, Axis.X);
   }
 
-  private boolean contains(Node x, Point2D p, Axis axis) {
-    if(x == null) {
+  private boolean contains(Node node, Point2D point, Axis axis) {
+    if(node == null) {
       return false;
     }
 
-    int compare = compareByAxis(x, p, switchAxis(axis));
-    if(compare < 0){
-      return contains(x.right, p, switchAxis(axis));
-    }else if(compare > 0) {
-      return contains(x.left, p, switchAxis(axis));
+    int compare = compareByAxis(node, point, switchAxis(axis));
+    if(compare <= 0){
+      if(node.point.equals(point)){
+        return true;
+      }else{
+        return contains(node.right, point, switchAxis(axis));
+      }
     }else {
-      return true;
+      return contains(node.left, point, switchAxis(axis));
     }
   }
 
@@ -189,6 +191,10 @@ public class KdTree {
   private List<Point2D> range(RectHV rect, Node node, Axis axis) {
     List<Point2D> range = new ArrayList<>();
 
+    if(node == null){
+      return range;
+    }
+
     if(rect.contains(node.point)){
       range.add(node.point);
     }
@@ -205,9 +211,9 @@ public class KdTree {
   }
 
   private boolean rectGoesLeft(RectHV rect, Node node, Axis axis) {
-    if(axis == Axis.X && node.point.x() < rect.xmax()){
+    if(axis == Axis.X && rect.xmin() < node.point.x()){
       return true;
-    } else if(axis == Axis.Y && node.point.y() < rect.ymax()){
+    } else if(axis == Axis.Y && rect.ymin() < node.point.y()){
       return true;
     } else {
       return false;
@@ -215,9 +221,9 @@ public class KdTree {
   }
 
   private boolean rectGoesRight(RectHV rect, Node node, Axis axis) {
-    if(axis == Axis.X && node.point.x() > rect.xmin()){
+    if(axis == Axis.X && rect.xmax() > node.point.x()){
       return true;
-    } else if(axis == Axis.Y && node.point.y() > rect.ymin()){
+    } else if(axis == Axis.Y && rect.ymax() > node.point.y()){
       return true;
     } else {
       return false;
@@ -227,6 +233,9 @@ public class KdTree {
   public Point2D nearest(Point2D p) {
     if(p == null) throw new java.lang.IllegalArgumentException();
     champion = null;
+    if(isEmpty()){
+      return null;
+    }
     findAndSetChampion(root, p);
     return champion;
   }

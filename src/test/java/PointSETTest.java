@@ -93,7 +93,7 @@ public class PointSETTest {
   }
 
   @Test
-  public void testNearest2() {
+  public void testNearestEqualsPoints() {
     PointSET set = new PointSET();
 
     List<Point2D> points = new ArrayList<>();
