@@ -4,6 +4,8 @@ import static junit.framework.TestCase.assertTrue;
 
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.StreamSupport;
 import org.junit.Test;
 
@@ -88,5 +90,58 @@ public class PointSETTest {
 
     System.out.println(set.nearest(p4));
     assertTrue(p1.equals(set.nearest(p4)));
+  }
+
+  @Test
+  public void testNearest2() {
+    PointSET set = new PointSET();
+
+    List<Point2D> points = new ArrayList<>();
+    points.add( new Point2D(0.0, 0.25));
+    points.add( new Point2D(0.25, 0.5));
+    points.add( new Point2D(0.25, 0.0));
+    points.add( new Point2D(0.75, 0.5));
+    points.add( new Point2D(0.25, 0.75));
+    points.add( new Point2D(0.0, 1.0));
+    points.add( new Point2D(0.75, 0.25));
+    points.add( new Point2D(0.5, 1.0));
+    points.add( new Point2D(1.0, 0.5));
+
+    points.stream().forEach(point -> set.insert(point));
+    Point2D query = new Point2D(0.25, 0.75);
+    Point2D expectedNearest = new Point2D(0.25, 0.75);
+
+    System.out.println(set.nearest(query));
+    assertTrue(expectedNearest.equals(set.nearest(query)));
+  }
+
+  @Test
+  //Sep14 14:00pm
+  public void testNearest3() {
+    PointSET set = new PointSET();
+
+    List<Point2D> points = new ArrayList<>();
+    points.add( new Point2D(1.0, 0.25));
+    points.add( new Point2D(0.375, 1.0));
+    points.add( new Point2D(0.625, 1.0));
+    points.add( new Point2D(1.0, 0.875));
+    points.add( new Point2D(0.625, 0.125));
+    points.add( new Point2D(0.625, 0.5));
+    points.add( new Point2D(1.0, 0.25));
+    points.add( new Point2D(0.25, 0.5));
+    points.add( new Point2D(0.5, 0.0));
+    points.add( new Point2D(0.125, 0.125));
+    points.add( new Point2D(0.0, 0.125));
+    points.add( new Point2D(0.375, 0.125));
+    points.add( new Point2D(0.375, 0.375));
+    points.add( new Point2D(0.25, 0.5));
+    points.add( new Point2D(1.0, 0.0));
+
+    points.stream().forEach(point -> set.insert(point));
+    Point2D query = new Point2D(0.25, 0.0);
+    Point2D expectedNearest = new Point2D(0.125, 0.125);
+
+    System.out.println(set.nearest(query));
+    assertTrue(expectedNearest.equals(set.nearest(query)));
   }
 }

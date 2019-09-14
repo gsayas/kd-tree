@@ -46,33 +46,28 @@ public class PointSET {
     return range;
   }
 
-  public Point2D nearest(Point2D origin) {
-    if(origin == null) throw new java.lang.IllegalArgumentException();
-    Point2D closest = null;
-    double nearest = -1;
+  public Point2D nearest(Point2D query) {
+    if(query == null) throw new java.lang.IllegalArgumentException();
+    Point2D closestPoint = null;
+    double nearestDistance = -1;
     double candidateDistance;
 
     for (Point2D p : set) {
-      if (p.equals(origin)) continue;
-
-      candidateDistance = getDistance(p, origin);
-      if( isCloser(nearest, candidateDistance) ){
-        closest = p;
-        nearest = candidateDistance;
+      candidateDistance = getDistance(p, query);
+      if( isCloser(candidateDistance, nearestDistance) ){
+        closestPoint = p;
+        nearestDistance = candidateDistance;
       }
     }
 
-    return closest;
+    return closestPoint;
   } // a nearest neighbor in the set to point p; null if the set is empty
 
   private double getDistance(Point2D p, Point2D origin) {
-    double diffX = Math.abs(Math.abs(origin.x()) - Math.abs(p.x()));
-    double diffY = Math.abs(Math.abs(origin.y()) - Math.abs(p.y()));
-
-    return diffX + diffY;
+    return p.distanceSquaredTo(origin);
   }
 
-  private boolean isCloser(double current, double candidate) {
+  private boolean isCloser(double candidate, double current) {
     return current == -1 || candidate < current;
   }
 
