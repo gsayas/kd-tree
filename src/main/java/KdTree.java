@@ -221,9 +221,9 @@ public class KdTree {
   }
 
   private boolean rectGoesRight(RectHV rect, Node node, Axis axis) {
-    if(axis == Axis.X && rect.xmax() > node.point.x()){
+    if(axis == Axis.X && rect.xmax() >= node.point.x()){
       return true;
-    } else if(axis == Axis.Y && rect.ymax() > node.point.y()){
+    } else if(axis == Axis.Y && rect.ymax() >= node.point.y()){
       return true;
     } else {
       return false;
