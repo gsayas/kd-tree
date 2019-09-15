@@ -104,7 +104,7 @@ public class KdTreeTest {
 
   @Test
   //Sep14 18:48pm
-  public void testRangeTraversal() {
+  public void testRangeTraversal2() {
 
     KdTree tree = new KdTree();
 
@@ -161,6 +161,37 @@ public class KdTreeTest {
     KdTree tree = new KdTree();
     assertEquals(null, tree.nearest(new Point2D(1, 1)));
 
+  }
+
+  @Test
+  public void testNearestWithRandomPoints() {
+    KdTree tree = new KdTree();
+    List<Point2D> points = new ArrayList<>();
+    points.add( new Point2D(0.7, 0.2));
+    points.add( new Point2D(0.5, 0.4));
+    points.add( new Point2D(0.2, 0.3));
+    points.add( new Point2D(0.4, 0.7));
+    points.add( new Point2D(0.9, 0.6));
+    points.stream().forEach(point -> tree.insert(point));
+
+    assertEquals(new Point2D(0.9, 0.6), tree.nearest(new Point2D(0.984, 0.39)));
+
+  }
+
+  @Test
+  public void testRangeTraversal() {
+    //TODO: integrate mockito
+    KdTree st = new KdTree();
+    List<Point2D> points = new ArrayList<>();
+    points.add( new Point2D(0.7, 0.2));
+    points.add( new Point2D(0.5, 0.4));
+    points.add( new Point2D(0.2, 0.3));
+    points.add( new Point2D(0.4, 0.7));
+    points.add( new Point2D(0.9, 0.6));
+    points.stream().forEach(point -> st.insert(point));
+    RectHV rect = new RectHV(0.0, 0.0, 1.0, 1.0);
+    assertEquals(2, StreamSupport.stream(st.range(rect).spliterator(), false).count());
+    StreamSupport.stream(st.range(rect).spliterator(), false).forEach(point -> System.out.println(point));
   }
 
 }

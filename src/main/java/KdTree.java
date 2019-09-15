@@ -35,6 +35,7 @@ public class KdTree {
     }
 
     public int getId() { return this.id; }
+    public Axis getAxis() { return this.axis; }
   }
 
   private Node root;
@@ -124,7 +125,7 @@ public class KdTree {
   }
 
   public void draw() {
-    draw(root, Axis.X, null);
+    if(root != null) draw(root, root.axis, null);
   }
 
   private void draw(Node node, Axis axis, Node parent) {
@@ -199,11 +200,11 @@ public class KdTree {
       range.add(node.point);
     }
 
-    if(rectGoesLeft(rect, node, switchAxis(axis))){
+    if(node.left != null && rectGoesLeft(rect, node, switchAxis(axis))){
       range.addAll(range(rect, node.left, switchAxis(axis)));
     }
 
-    if(rectGoesRight(rect, node, switchAxis(axis))){
+    if(node.right != null && rectGoesRight(rect, node, switchAxis(axis))){
       range.addAll(range(rect, node.right, switchAxis(axis)));
     }
 
@@ -230,45 +231,66 @@ public class KdTree {
     }
   }
 
-  public Point2D nearest(Point2D p) {
-    if(p == null) throw new java.lang.IllegalArgumentException();
+  public Point2D nearest(Point2D query) {
+    if(query == null) throw new java.lang.IllegalArgumentException();
     champion = null;
     if(isEmpty()){
       return null;
     }
-    findAndSetChampion(root, p);
+    findAndSetChampion(root, query);
     return champion;
   }
 
-  private void findAndSetChampion(Node subtree, Point2D p) {
+  private void findAndSetChampion(Node subtree, Point2D query) {
     //System.out.println(String.format("Examining point: %s",  subtree.point.toString()));
-    if(isBetterChampion(subtree.point, p)){
+    if(isBetterChampion(subtree.point, query)){
       champion = subtree.point;
     }
 
-    Side sideTowardsPoint = findSideTowardsPoint(subtree, p);
+    Side sideTowardsPoint = findSideTowardsPoint(subtree, query);
     Node subtreeTowardsPoint = getSubtreeTowardsPoint(subtree, sideTowardsPoint);
 
     if(subtreeTowardsPoint != null) {
-      findAndSetChampion(subtreeTowardsPoint, p);
+      findAndSetChampion(subtreeTowardsPoint, query);
     }
 
     Node subtreeAwayFromPoint = getSubtreeTowardsPoint(subtree, switchSide(sideTowardsPoint));
-    if(subtreeAwayFromPoint != null) {
-      if (couldOtherSideContainChampion(switchSide(sideTowardsPoint), subtreeAwayFromPoint, p)) {
-        findAndSetChampion(subtreeAwayFromPoint, p);
-      }
+    if(couldOtherSideContainChampion(subtree, query, subtreeAwayFromPoint, subtreeTowardsPoint)) {
+       findAndSetChampion(subtreeAwayFromPoint, query);
     }
   }
 
-  private boolean couldOtherSideContainChampion(Side switchSide, Node subtreeAwayFromPoint,
-      Point2D p) {
-    return true;
+  private boolean couldOtherSideContainChampion(Node parent,
+      Point2D query,
+      Node subtreeAwayFromPoint,
+      Node subtreeTowardsPoint ) {
+
+    if(subtreeAwayFromPoint == null){
+      return false;
+    }
+
+    if(subtreeTowardsPoint == null){
+      return true;
+    }
+
+    if(parent.axis == Axis.X){
+      return couldOtherYSideContainChampion(parent, query);
+    }else{
+      return couldOtherXSideContainChampion(parent, query);
+    }
   }
 
-  private Side findSideTowardsPoint(Node subtree, Point2D p) {
-    int cmp = compareByAxis(subtree, p, switchAxis(subtree.axis));
-    return cmp < 1 ? Side.RIGHT : Side.LEFT;
+  private boolean couldOtherYSideContainChampion(Node parent, Point2D query) {
+    return query.distanceSquaredTo(new Point2D(query.x(), parent.point.y())) < champion.distanceSquaredTo(query);
+  }
+
+  private boolean couldOtherXSideContainChampion(Node parent, Point2D query) {
+    return query.distanceSquaredTo(new Point2D(parent.point.x(), query.y())) < champion.distanceSquaredTo(query);
+  }
+
+  private Side findSideTowardsPoint(Node subtree, Point2D query) {
+    int cmp = compareByAxis(subtree, query, switchAxis(subtree.axis));
+    return cmp <= 0 ? Side.RIGHT : Side.LEFT;
   }
 
   private boolean isBetterChampion(Point2D candidate, Point2D query) {
