@@ -189,8 +189,9 @@ public class KdTreeTest {
     points.add( new Point2D(0.4, 0.7));
     points.add( new Point2D(0.9, 0.6));
     points.stream().forEach(point -> st.insert(point));
-    RectHV rect = new RectHV(0.0, 0.0, 1.0, 1.0);
-    assertEquals(2, StreamSupport.stream(st.range(rect).spliterator(), false).count());
+
+    RectHV rect = new RectHV(0.71, 0.1, 0.74, 0.41);
+    assertEquals(0, StreamSupport.stream(st.range(rect).spliterator(), false).count());
     StreamSupport.stream(st.range(rect).spliterator(), false).forEach(point -> System.out.println(point));
   }
 

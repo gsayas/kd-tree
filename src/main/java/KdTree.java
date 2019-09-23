@@ -51,7 +51,7 @@ public class KdTree {
 
   public void insert(Point2D p) {
     if(p == null) throw new java.lang.IllegalArgumentException();
-    root = insert(root, p, Axis.X, null);
+    root = insert(root, p, Axis.Y, null);
   }
 
   private Node insert(Node x, Point2D p, Axis axis, Side side) {
@@ -104,7 +104,7 @@ public class KdTree {
     if(isEmpty()){
       return false;
     }
-    return contains(root, p, Axis.X);
+    return contains(root, p, Axis.Y);
   }
 
   private boolean contains(Node node, Point2D point, Axis axis) {
@@ -186,7 +186,7 @@ public class KdTree {
 
   public Iterable<Point2D> range(RectHV rect)  {
     if(rect == null) throw new java.lang.IllegalArgumentException();
-    return range(rect, root, Axis.X);
+    return range(rect, root, Axis.Y);
   }
 
   private List<Point2D> range(RectHV rect, Node node, Axis axis) {
